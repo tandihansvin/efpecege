@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Week 1</title>
+	<script type="./babylon.custom.js"></script>
+</head>
+<body>
+	<canvas id="renderCanvas" width="1280px" height="720px"></canvas>
+	<script type="text/javascript">
+		function createMat(scene){
+			var mat = new BABYLON.StandardMaterial("material",scene);
+			mat.diffuseColor = new BABYLON.Color3(1,0,0);
+			mat.specularColor = new BABYLON.Color3(0,1,0);
+			mat.specularPower = 25;
+			mat.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+			mat.alpha = 1;
+			return mat;
+		}
+
+		document.addEventListener("DOMContentLoaded", function(){
+			//Get canvas
+			var canvas = document.getElementById("renderCanvas");
+
+			//Create babylon engine
+			var engine = new BABYLON.Engine(canvas, true);
+
+			//Create scene
+			var scene = new BABYLON.Scene(engine);
+			var physicsPlugin = new BABYLON.CannonJSPlugin();
+			gravityVector = new BABYLON.Vector3(0, 0, 0);
+			scene.enablePhysics(gravityVector, physicsPlugin);
+			
+			//Create FreeCamera
+			camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0,0,10), scene);
+
+			camera.setTarget(new BABYLON.Vector3(0,4,-10));
+			camera.attachControl(canvas);
+
+			//Create light
+			var light = new BABYLON.HemisphericLight("hLight",new BABYLON.Vector3(0,8,0), scene);
+
+			var mat =createMat(scene);
+			var box = new BABYLON.Mesh.CreateBox("box",0.5,scene);
+			box.material = mat;
+			box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, scene);
+
+			var move_speed = 0.2;
+			engine.runRenderLoop(function(){
+				scene.render();
+				window.onkeypress = function (e) {
+		                if (e.key == 'w') {
+		                	box.rotation.x += move_speed;
+		                	box.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, 1, 0), box.getAbsolutePosition());
+		                	if(box.getLinearVelocity().y>=4) box.setLinearVelocity(new BABYLON.Vector3(0,4,0));
+		                }
+		                else if (e.key == 's'){
+		                	box.rotation.x -= move_speed;	
+		                	box.physicsImpostor.applyImpulse(new BABYLON.Vector3(0, -1, 0), box.getAbsolutePosition());
+		                	if(box.getLinearVelocity().y<=-4) box.setLinearVelocity(new BABYLON.Vector3(0,-4,0));
+		                } 
+		                else if (e.key == 'a'){
+		                	box.rotation.y += move_speed;
+		                	box.physicsImpostor.applyImpulse(new BABYLON.Vector3(1, 0, 0), box.getAbsolutePosition());
+		                	if(box.getLinearVelocity().x>=4) box.setLinearVelocity(new BABYLON.Vector3(4,0,0));
+		                } 
+		                else if (e.key == 'd') {
+		                	box.rotation.y -= move_speed;
+		                	box.physicsImpostor.applyImpulse(new BABYLON.Vector3(-1, 0, 0), box.getAbsolutePosition());
+		                	if(box.getLinearVelocity().x<=-4) box.setLinearVelocity(new BABYLON.Vector3(-4,0,0));
+		                }
+		        };
+			});
+		});
+	</script>
+</body>
+</html>

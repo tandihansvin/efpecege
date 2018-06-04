@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="babylon.custom.js"></script>
+    <script src="http://www.babylonjs.com/cannon.js"></script>
+    <script type="text/javascript" src="jquery-3.3.1.js"></script>
+    <style>
+        html, body {
+            overflow: hidden;
+            width   : 100%;
+            height  : 100%;
+            margin  : 0;
+            padding : 0;
+        }
+
+        #renderCanvas {
+            width   : 100%;
+            height  : 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+
+        function createMat(scene,pic){
+            var mat = new BABYLON.StandardMaterial("materialTex",scene);
+
+            mat.diffuseTexture = new BABYLON.Texture(pic, scene);
+            mat.alpha = 1;
+            return mat;
+        }
+
+        function createBox(scene,x,y,z){
+            var box = new BABYLON.Mesh.CreateBox('box',1,scene);
+            box.position = new BABYLON.Vector3(x,y,z);
+        }
+
+        window.addEventListener('DOMContentLoaded', function(){
+            var canvas = document.getElementById('renderCanvas');
+
+            var engine = new BABYLON.Engine(canvas, true);
+
+            //creating scene
+            var scene = new BABYLON.Scene(engine);
+            scene.enablePhysics();
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 4, new BABYLON.Vector3(-15,0,0), scene);
+            camera.attachControl(canvas, true);
+            camera.setPosition(new BABYLON.Vector3(-15,3,-16));
+            var light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1,0,-1), scene);
+            
+            //background
+            var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height:18, width: 60}, scene);
+            var planeMat = createMat(scene,'http://localhost:8000/tanah.jpg');
+            plane.material = planeMat;
+
+
+            // //generate maze
+            let offsetX = 30;
+            let offsetY = 7;
+            let url = "http://localhost:8000/level.json";
+            var message = $.get(url);
+            message.done(function(data){
+                for(let i=0;i<data["1"]["maze"].length;i++){
+                    for(let j=0;j<data["1"]["maze"][i].length;j++){
+                        if (data["1"]["maze"][i][j] != '.') {
+                            createBox(scene, j-offsetX, offsetY-i,-0.5);
+                        } 
+                    }
+                }
+            });
+            //generate starting point
+            
+
+            engine.runRenderLoop(function(){
+                scene.render();
+            });
+        });
+    </script>
+</body>
+</html>

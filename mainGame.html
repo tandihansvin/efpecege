@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="babylon.custom.js"></script>
+	<style>
+        html, body {
+            overflow: hidden;
+            width   : 100%;
+            height  : 100%;
+            margin  : 0;
+            padding : 0;
+        }
+
+        #renderCanvas {
+            width   : 100%;
+            height  : 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+	<canvas id="renderCanvas"></canvas>
+	<script>
+		window.addEventListener('DOMContentLoaded', function(){
+			var canvas = document.getElementById('renderCanvas');
+			var engine = new BABYLON.Engine(canvas, true);
+
+			//creating scene
+			var scene = new BABYLON.Scene(engine);
+			scene.enablePhysics();
+			var camera = new BABYLON.ArcRotateCamera('camera',0,10,10,new BABYLON.Vector3(0,0,0),scene);
+			var light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1,1,0), scene);
+			camera.setPosition(new BABYLON.Vector3(0,50,-1));
+			camera.attachControl(canvas,false);
+			
+			var plane = BABYLON.MeshBuilder.CreatePlane("plane", {width: 5}, scene);
+
+			//creating background
+			// var bkg = BABYLON.Mesh.CreateGround('bkg',)
+
+			engine.runRenderLoop(function(){
+                scene.render();
+            });
+		});
+	</script>
+</body>
+</html>
