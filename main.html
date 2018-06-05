@@ -23,6 +23,9 @@
 <body>
     <canvas id="renderCanvas"></canvas>
     <script>
+        const offsetX = 30;
+        const offsetY = 7; 
+        var platform;   
 
         function createMat(scene,pic){
             var mat = new BABYLON.StandardMaterial("materialTex",scene);
@@ -30,6 +33,22 @@
             mat.diffuseTexture = new BABYLON.Texture(pic, scene);
             mat.alpha = 1;
             return mat;
+        }
+
+        function createPlayer(start, scene) {
+            let player = new BABYLON.Mesh.CreateBox("player", 1, scene);
+            player.position = new BABYLON.Vector3(start[0]-offsetX, offsetY-start[1], -0.5);
+        }
+
+        function createExit(end, scene) {
+            let player = new BABYLON.Mesh.CreateBox("exit", 1, scene);
+            player.position = new BABYLON.Vector3(end[0]-offsetX, offsetY-end[1], -0.5);   
+        }
+
+        function createPlatform(box, boxSize, scene){
+            platform = new BABYLON.Mesh.CreateBox("platform", 1, scene);
+            platform.scaling = new BABYLON.Vector3(boxSize[0], boxSize[1], 1);
+            platform.position = new BABYLON.Vector3(box[0]-offsetX, offsetY-box[1], -0.5);
         }
 
         function createBox(scene,x,y,z){
@@ -45,9 +64,9 @@
             //creating scene
             var scene = new BABYLON.Scene(engine);
             scene.enablePhysics();
-            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 4, new BABYLON.Vector3(-15,0,0), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 4, new BABYLON.Vector3(-16,0,0), scene);
             camera.attachControl(canvas, true);
-            camera.setPosition(new BABYLON.Vector3(-15,3,-16));
+            camera.setPosition(new BABYLON.Vector3(-16,3,-16));
             var light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1,0,-1), scene);
             
             //background
@@ -57,21 +76,37 @@
 
 
             // //generate maze
-            let offsetX = 30;
-            let offsetY = 7;
             let url = "http://localhost:8000/level.json";
             var message = $.get(url);
             message.done(function(data){
+                // Generate block
                 for(let i=0;i<data["1"]["maze"].length;i++){
                     for(let j=0;j<data["1"]["maze"][i].length;j++){
-                        if (data["1"]["maze"][i][j] != '.') {
+                        if (data["1"]["maze"][i][j] == 'x') {
                             createBox(scene, j-offsetX, offsetY-i,-0.5);
                         } 
                     }
                 }
+                createPlayer(data["1"]["start"], scene);
+                createExit(data["1"]["end"], scene);
+                createPlatform(data["1"]["box"], data["1"]["boxSize"], scene);
             });
-            //generate starting point
-            
+
+            window.onkeydown = function(event){
+                let code = event.keyCode;
+                if(code==37){     //left
+                    platform.position. x -=  0.2;
+                }
+                else if(code==39){ //right
+                    platform.position. x +=  0.2;
+                }
+                else if(code==38){  //up
+                    platform.position. y +=  0.2;
+                }
+                else if(code==40){  //down
+                    platform.position. y -=  0.2;
+                }
+            }
 
             engine.runRenderLoop(function(){
                 scene.render();
