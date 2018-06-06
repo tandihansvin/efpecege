@@ -20,6 +20,13 @@ let camera;
 let up, dn, lf, rg;
 let direction;
 
+function createMat(scene,pic){
+    let mat = new BABYLON.StandardMaterial(pic, scene);
+    mat.diffuseTexture = new BABYLON.Texture(pic, scene);
+    mat.alpha = 1;
+    return mat;
+}
+
 function createBackground(scene){
     let mat = new BABYLON.StandardMaterial("Mat", scene);
     mat.alpha = 0;
@@ -68,14 +75,27 @@ function createPlayer(start, scene) {
     player.physicsImpostor = new BABYLON.PhysicsImpostor(player, BABYLON.PhysicsImpostor.SphereImpostor, {mass:0.1, restitution:0, friction:0},scene);
     player.position = new BABYLON.Vector3(start[0]-offsetX, offsetY-start[1], -0.5);
 
+    // Invisible texture
+    let inv = new BABYLON.StandardMaterial("invisible", scene);
+    inv.alpha = 0;
+
     // Add small for collision detection
     leftSmall = new BABYLON.Mesh.CreateBox("Lsmall", 0.5, scene);
     leftSmall.parent = player;
     leftSmall.translate(BABYLON.Axis.X, -0.5, BABYLON.Space.LOCAL);
+    leftSmall.material = inv;
 
     rightSmall = new BABYLON.Mesh.CreateBox("Rsmall", 0.5, scene);
     rightSmall.parent = player;
     rightSmall.translate(BABYLON.Axis.X, 0.5, BABYLON.Space.LOCAL);
+    rightSmall.material = inv;
+
+    // Texture
+    let mat = new BABYLON.StandardMaterial("awesm", scene);
+    mat.diffuseTexture = new BABYLON.Texture("textures/player.png", scene);
+    mat.diffuseTexture.hasAlpha = true;
+    mat.backFaceCulling = false;
+    player.material = mat;
 }
 
 function createExit(end, scene) {
@@ -84,7 +104,9 @@ function createExit(end, scene) {
     exit.physicsImpostor = new BABYLON.PhysicsImpostor(exit, BABYLON.PhysicsImpostor.BoxImpostor, {mass:0, restitution:0, friction:0},scene);
     exit.physicsImpostor.registerOnPhysicsCollide(player.physicsImpostor, function(main, collided){
         handleWin(scene);
-    });;
+    });
+
+    exit.material = createMat(scene, "textures/goal.png");
 }
 
 function createPlatform(box, boxSize, scene){
@@ -92,7 +114,8 @@ function createPlatform(box, boxSize, scene){
     platform.scaling = new BABYLON.Vector3(boxSize[0], boxSize[1], 1);
     platform.position = new BABYLON.Vector3(box[0]-offsetX, offsetY-box[1], -0.5);
     platform.physicsImpostor = new BABYLON.PhysicsImpostor(platform, BABYLON.PhysicsImpostor.BoxImpostor, {mass:20, restitution:0, friction:0},scene);
-    // platform.physicsImpostor.registerOnPhysicsCollide(small.physicsImpostor, turnBackBox);
+
+    platform.material = createMat(scene, "textures/gold.png")
 }
 
 function createBox(scene,x,y,z){
@@ -101,6 +124,8 @@ function createBox(scene,x,y,z){
     box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {mass:0, restitution:0, friction:0},scene);
     // box.physicsImpostor.registerOnPhysicsCollide(small.physicsImpostor, turnBackBox);
     listOfBox.push(box);
+
+    box.material = createMat(scene, "textures/wood.png")
 }
 
 function createMeshes(scene, lvl) {
