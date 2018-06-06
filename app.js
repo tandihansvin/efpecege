@@ -14,6 +14,7 @@ var direction = 1;
 
 var state;
 var jsonData;
+var level="2";
 
 function createMat(scene,pic){
     var mat = new BABYLON.StandardMaterial("materialTex",scene);
@@ -96,10 +97,10 @@ function checkCollision(){
 }
 
 function resetPosition(scene){
-    let start = jsonData["1"]["start"];
+    let start = jsonData[level]["start"];
     player.position = new BABYLON.Vector3(start[0]-offsetX, offsetY-start[1], -0.5);
 
-    let box = jsonData["1"]["box"];
+    let box = jsonData[level]["box"];
     platform.position = new BABYLON.Vector3(box[0]-offsetX, offsetY-box[1], -0.5);
     
     direction = 1;
@@ -130,13 +131,13 @@ window.addEventListener('DOMContentLoaded', function(){
     var message = $.get(url);
     message.done(function(data){
         jsonData=data;
-        createPlayer(jsonData["1"]["start"], scene);
-        createExit(jsonData["1"]["end"], scene);
-        createPlatform(jsonData["1"]["box"], jsonData["1"]["boxSize"], scene);
+        createPlayer(jsonData[level]["start"], scene);
+        createExit(jsonData[level]["end"], scene);
+        createPlatform(jsonData[level]["box"], jsonData[level]["boxSize"], scene);
         // Generate block
-        for(let i=0;i<jsonData["1"]["maze"].length;i++){
-            for(let j=0;j<jsonData["1"]["maze"][i].length;j++){
-                if (jsonData["1"]["maze"][i][j] == 'x') {
+        for(let i=0;i<jsonData[level]["maze"].length;i++){
+            for(let j=0;j<jsonData[level]["maze"][i].length;j++){
+                if (jsonData[level]["maze"][i][j] == 'x') {
                     createBox(scene, j-offsetX, offsetY-i,-0.5);
                 } 
             }
