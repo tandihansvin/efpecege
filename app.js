@@ -3,21 +3,21 @@ const offsetX = 30;
 const offsetY = 7; 
 
 // Mesh globals
-var player;
-var small;
-var platform;   
-var listOfBox = [];
+let player;
+let small;
+let platform;
+let listOfBox = [];
 
-var loaded = false; // Flag to check if json is loaded
+let loaded = false; // Flag to check if json is loaded
 
-var direction = 1;
+let direction = 1;
 
-var state;
-var jsonData;
-var level="2";
+let state;
+let jsonData;
+let level = "2";
 
 function createMat(scene,pic){
-    var mat = new BABYLON.StandardMaterial("materialTex",scene);
+    let mat = new BABYLON.StandardMaterial("materialTex", scene);
     mat.diffuseTexture = new BABYLON.Texture(pic, scene);
     mat.alpha = 1;
     return mat;
@@ -61,7 +61,7 @@ function createPlatform(box, boxSize, scene){
 }
 
 function createBox(scene,x,y,z){
-    var box = new BABYLON.Mesh.CreateBox('box',1,scene);
+    let box = new BABYLON.Mesh.CreateBox('box', 1, scene);
     box.position = new BABYLON.Vector3(x,y,z);
     box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, {mass:0, restitution:0, friction:0},scene);
     // box.physicsImpostor.registerOnPhysicsCollide(small.physicsImpostor, turnBackBox);
@@ -69,15 +69,15 @@ function createBox(scene,x,y,z){
 }
 
 function createBackground(scene){
-    var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height:18, width: 60}, scene);
-    var planeMat = createMat(scene,'http://localhost:8000/tanah.jpg');
+    let plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: 18, width: 60}, scene);
+    let planeMat = createMat(scene, 'http://localhost:8000/tanah.jpg');
     plane.material = planeMat;
     plane.setPhysicsState(BABYLON.PhysicsEngine.PlaneImpostor, { mass: 0, restitution: 0.3, friction: 0, move: false });
 
     //invisible plane
-    var mat = new BABYLON.StandardMaterial("Mat", scene);
+    let mat = new BABYLON.StandardMaterial("Mat", scene);
     mat.alpha = 0;
-    var inviPlane = BABYLON.MeshBuilder.CreatePlane("plane2", {height:18, width:60}, scene);
+    let inviPlane = BABYLON.MeshBuilder.CreatePlane("plane2", {height: 18, width: 60}, scene);
     inviPlane.position.z = -1;
     inviPlane.material = mat;
     inviPlane.setPhysicsState(BABYLON.PhysicsEngine.PlaneImpostor, { mass: 0, restitution: 0.3, friction: 0, move: false }); 
@@ -109,26 +109,26 @@ function resetPosition(scene){
 }
 
 window.addEventListener('DOMContentLoaded', function(){
-    var canvas = document.getElementById('renderCanvas');
+    let canvas = document.getElementById('renderCanvas');
     state = "playing";
 
-    var engine = new BABYLON.Engine(canvas, true);
+    let engine = new BABYLON.Engine(canvas, true);
 
     //creating scene
-    var scene = new BABYLON.Scene(engine);
+    let scene = new BABYLON.Scene(engine);
     scene.enablePhysics(new BABYLON.Vector3(0, 0, 0), new BABYLON.OimoJSPlugin());
 
-    var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 4, new BABYLON.Vector3(-16,0,0), scene);
+    let camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 2, 4, new BABYLON.Vector3(-16, 0, 0), scene);
     // camera.attachControl(canvas, true);
     camera.setPosition(new BABYLON.Vector3(-16,3,-16));
-    var light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1,0,-1), scene);
+    let light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(1, 0, -1), scene);
     
     //background
     createBackground(scene);
 
-    // //generate maze
+    //generate maze
     let url = "http://localhost:8000/level.json";
-    var message = $.get(url);
+    let message = $.get(url);
     message.done(function(data){
         jsonData=data;
         createPlayer(jsonData[level]["start"], scene);
@@ -160,7 +160,7 @@ window.addEventListener('DOMContentLoaded', function(){
         else if(code==40){  //down
             dn=1;
         }
-    }
+    };
     window.onkeyup = function(event){
         let code = event.keyCode;
         if(code==37){     //left
@@ -175,7 +175,7 @@ window.addEventListener('DOMContentLoaded', function(){
         else if(code==40){  //down
             dn=0;
         }
-    }
+    };
 
     function platformMovement(){
         const PLATFORM_SPEED = 8;
