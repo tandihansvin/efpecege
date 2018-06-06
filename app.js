@@ -206,8 +206,9 @@ function handleLose(){
 function handleWin(scene){
     if (state === 1){
         state=3;
-        // renderLevel(scene, level + 1);
-        // level += 1;
+
+        $("#renderCanvas").hide();
+        $("#win").show();
     }
 }
 
@@ -246,8 +247,12 @@ function bindInput() {
 
 function bindLevelSelector(scene) {
     $("a").click(function() {
+
         level = $(this).html();
         renderLevel(scene, level);
+
+        $("#renderCanvas").show();
+        $("#win").hide();
     });
 }
 

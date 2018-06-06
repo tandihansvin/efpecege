@@ -16,8 +16,12 @@
             background: #1c6334;
         }
 
-        win {
-
+        #win {
+            width: 100%;
+            height: 90%;
+            margin: 0;
+            padding: 0;
+            display: none;
         }
 
         #renderCanvas {
@@ -41,6 +45,10 @@
             float: left;
         }
 
+        li .right {
+            float: right;
+        }
+
         li a {
             display: block;
             color: white;
@@ -55,6 +63,7 @@
     </style>
 </head>
 <body>
+    <img id="win" src="giphy.gif">
     <canvas id="renderCanvas"></canvas>
     <div id="footer">
         <ul>
@@ -72,6 +81,9 @@
             </li>
             <li>
                 <a>5</a>
+            </li>
+            <li>
+                <a>Restart level</a>
             </li>
         </ul>
     </div>
