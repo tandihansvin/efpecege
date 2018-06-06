@@ -265,11 +265,16 @@ function loadJSON(scene){
     });
 }
 
+function loadBGM(scene) {
+    music = new BABYLON.Sound("Music", "colors.mp3", scene, null, { loop: true, autoplay: true });
+}
+
 window.addEventListener('DOMContentLoaded', function(){
     let canvas = document.getElementById('renderCanvas');
     let engine = new BABYLON.Engine(canvas, true);
     let scene = createScene(engine);
 
+    loadBGM(scene);
     loadJSON(scene);
     bindInput();
     bindLevelSelector(scene);
